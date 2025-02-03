@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .register-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .link {
+            display: block;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <h2>Đăng Ký</h2>
+        <input type="text" id="newUsername" placeholder="Tên người dùng" required>
+        <input type="password" id="newPassword" placeholder="Mật khẩu" required>
+        <button onclick="register()">Đăng Ký</button>
+        <a href="login.html" class="link">Đã có tài khoản? Đăng nhập</a>
+    </div>
+
+    <script>
+        function register() {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+
+            // Kiểm tra nếu tài khoản đã tồn tại
+            if (localStorage.getItem(username)) {
+                alert("Tên người dùng đã tồn tại!");
+            } else {
+                const user = {
+                    username: username,
+                    password: password
+                };
+                localStorage.setItem(username, JSON.stringify(user)); // Lưu tài khoản
+                alert("Đăng ký thành công!");
+                window.location.href = "login.html"; // Chuyển về trang đăng nhập
+            }
+        }
+    </script>
+
+</body>
+</html>
