@@ -7,71 +7,80 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            text-align: center;
+            background: url('images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
-        .register-container {
-            background: #fff;
+        .container {
+            margin-top: 100px;
+            background-color: rgba(0, 0, 0, 0.7);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: white;
             width: 300px;
-            text-align: center;
+            margin: auto;
         }
         input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border-radius: 5px;
-            border: 1px solid #ccc;
+            border: none;
         }
         button {
-            width: 100%;
-            padding: 10px;
             background-color: #4CAF50;
             color: white;
-            border: none;
+            padding: 10px;
             border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
         }
-        .link {
-            display: block;
-            margin-top: 10px;
-            color: #007BFF;
-            text-decoration: none;
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
 
-    <div class="register-container">
+    <div class="container">
         <h2>Đăng Ký</h2>
-        <input type="text" id="newUsername" placeholder="Tên người dùng" required>
-        <input type="password" id="newPassword" placeholder="Mật khẩu" required>
-        <button onclick="register()">Đăng Ký</button>
-        <a href="login.html" class="link">Đã có tài khoản? Đăng nhập</a>
+        <form id="registerForm">
+            <input type="text" id="username" placeholder="Tên đăng nhập" required>
+            <input type="password" id="password" placeholder="Mật khẩu" required>
+            <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+            <button type="submit">Đăng Ký</button>
+        </form>
+        <p>Đã có tài khoản? <a href="login.html" style="color: lightblue;">Đăng nhập</a></p>
     </div>
 
     <script>
-        function register() {
-            const username = document.getElementById('newUsername').value;
-            const password = document.getElementById('newPassword').value;
+        const users = JSON.parse(localStorage.getItem('users')) || [];
 
-            // Kiểm tra nếu tài khoản đã tồn tại
-            if (localStorage.getItem(username)) {
-                alert("Tên người dùng đã tồn tại!");
-            } else {
-                const user = {
-                    username: username,
-                    password: password
-                };
-                localStorage.setItem(username, JSON.stringify(user)); // Lưu tài khoản
-                alert("Đăng ký thành công!");
-                window.location.href = "login.html"; // Chuyển về trang đăng nhập
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Kiểm tra mật khẩu có khớp không
+            if (password !== confirmPassword) {
+                alert("Mật khẩu không khớp!");
+                return;
             }
-        }
+
+            // Kiểm tra tên đăng nhập đã tồn tại chưa
+            if (users.find(u => u.username === username)) {
+                alert("Tên đăng nhập đã tồn tại!");
+                return;
+            }
+
+            // Thêm tài khoản mới vào localStorage
+            users.push({ username, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert("Đăng ký thành công! Bạn có thể đăng nhập ngay.");
+            window.location.href = "login.html"; // Chuyển đến trang đăng nhập
+        });
     </script>
 
 </body>
