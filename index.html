@@ -80,6 +80,14 @@
     </div>
 
     <script>
+        // Kiểm tra nếu người dùng đã đăng nhập
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+            // Nếu chưa đăng nhập, chuyển đến trang đăng nhập
+            alert("Bạn chưa đăng nhập! Vui lòng đăng nhập trước.");
+            window.location.href = "login.html"; // Chuyển đến trang đăng nhập
+        }
+
         function openChat() {
             window.location.href = "chat.html"; // Mở trang chat khi nhấn
         }
