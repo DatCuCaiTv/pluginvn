@@ -10,7 +10,6 @@
             text-align: center;
             background: url('images/background.jpg') no-repeat center center fixed;
             background-size: cover;
-            transition: background 0.5s ease-in-out;
         }
         .container {
             margin-top: 100px;
@@ -37,23 +36,28 @@
         .menu a:hover {
             background: rgba(255, 255, 255, 0.3);
         }
-        .image-list {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .image-list img {
-            width: 120px;
-            height: 80px;
+
+        /* Ô chat nhỏ ở góc trái */
+        .chat-box {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
             cursor: pointer;
-            border: 2px solid white;
-            border-radius: 10px;
             transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .image-list img:hover {
-            transform: scale(1.1);
-            border-color: yellow;
+        .chat-box img {
+            width: 40px;
+            height: 40px;
+        }
+        .chat-box:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
@@ -63,23 +67,21 @@
         <h1>Chào mừng đến với trang chính</h1>
         
         <div class="menu">
-            <a href="trang1.html">Trang 1</a>
-            <a href="trang2.html">Trang 2</a>
+            <a href="trang1.html">Kiếm Khí Plugin</a>
+            <a href="trang2.html">Damage Plugin</a>
             <a href="trang3.html">Trang 3</a>
         </div>
 
-        <!-- Danh sách ảnh có sẵn trên server -->
-        <div class="image-list">
-            <img src="images/bg1.jpg" onclick="changeBackground('images/bg1.jpg')" alt="Ảnh 1">
-            <img src="images/bg2.jpg" onclick="changeBackground('images/bg2.jpg')" alt="Ảnh 2">
-            <img src="images/bg3.jpg" onclick="changeBackground('images/bg3.jpg')" alt="Ảnh 3">
-            <img src="images/bg4.jpg" onclick="changeBackground('images/bg4.jpg')" alt="Ảnh 4">
-        </div>
+    </div>
+
+    <!-- Ô chat nhỏ với icon -->
+    <div class="chat-box" onclick="openChat()">
+        <img src="images/chat-icon.png" alt="Chat">
     </div>
 
     <script>
-        function changeBackground(imagePath) {
-            document.body.style.backgroundImage = `url(${imagePath})`;
+        function openChat() {
+            window.location.href = "chat.html"; // Mở trang chat khi nhấn
         }
     </script>
 
