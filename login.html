@@ -7,67 +7,73 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            text-align: center;
+            background: url('images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
-        .login-container {
-            background: #fff;
+        .container {
+            margin-top: 100px;
+            background-color: rgba(0, 0, 0, 0.7);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: white;
             width: 300px;
-            text-align: center;
+            margin: auto;
         }
         input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border-radius: 5px;
-            border: 1px solid #ccc;
+            border: none;
         }
         button {
-            width: 100%;
-            padding: 10px;
             background-color: #4CAF50;
             color: white;
-            border: none;
+            padding: 10px;
             border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
         }
-        .link {
-            display: block;
-            margin-top: 10px;
-            color: #007BFF;
-            text-decoration: none;
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
 
-    <div class="login-container">
+    <div class="container">
         <h2>Đăng Nhập</h2>
-        <input type="text" id="username" placeholder="Tên người dùng" required>
-        <input type="password" id="password" placeholder="Mật khẩu" required>
-        <button onclick="login()">Đăng Nhập</button>
-        <a href="register.html" class="link">Chưa có tài khoản? Đăng ký</a>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Tên đăng nhập" required>
+            <input type="password" id="password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng Nhập</button>
+        </form>
+        <p>Chưa có tài khoản? <a href="register.html" style="color: lightblue;">Đăng ký</a></p>
     </div>
 
     <script>
-        function login() {
+        // Kiểm tra nếu đã có tài khoản đăng nhập trong localStorage
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            
-            // Kiểm tra thông tin đăng nhập từ localStorage
-            const storedUser = JSON.parse(localStorage.getItem(username));
-            if (storedUser && storedUser.password === password) {
-                localStorage.setItem('loggedInUser', username); // Lưu trạng thái đăng nhập
-                window.location.href = "chat.html"; // Chuyển đến trang chat
+
+            // Kiểm tra thông tin tài khoản
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                // Lưu thông tin người dùng đăng nhập
+                localStorage.setItem('loggedInUser', username);
+                alert("Đăng nhập thành công!");
+                window.location.href = "index.html"; // Quay lại trang chính
             } else {
-                alert("Tên người dùng hoặc mật khẩu không đúng!");
+                alert("Sai tên đăng nhập hoặc mật khẩu!");
             }
-        }
+        });
     </script>
 
 </body>
