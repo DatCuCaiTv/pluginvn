@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background: url('background.jpg') no-repeat center center fixed;
+            background: url('images/background.jpg') no-repeat center center fixed;
             background-size: cover;
             transition: background 0.5s ease-in-out;
         }
@@ -37,11 +37,23 @@
         .menu a:hover {
             background: rgba(255, 255, 255, 0.3);
         }
-        #bgInput {
+        .image-list {
             margin-top: 20px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .image-list img {
+            width: 120px;
+            height: 80px;
+            cursor: pointer;
+            border: 2px solid white;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .image-list img:hover {
+            transform: scale(1.1);
+            border-color: yellow;
         }
     </style>
 </head>
@@ -56,24 +68,20 @@
             <a href="trang3.html">Trang 3</a>
         </div>
 
-        <!-- Chọn ảnh nền -->
-        <input type="file" id="bgInput" accept="image/*">
+        <!-- Danh sách ảnh có sẵn trên server -->
+        <div class="image-list">
+            <img src="images/bg1.jpg" onclick="changeBackground('images/bg1.jpg')" alt="Ảnh 1">
+            <img src="images/bg2.jpg" onclick="changeBackground('images/bg2.jpg')" alt="Ảnh 2">
+            <img src="images/bg3.jpg" onclick="changeBackground('images/bg3.jpg')" alt="Ảnh 3">
+            <img src="images/bg4.jpg" onclick="changeBackground('images/bg4.jpg')" alt="Ảnh 4">
+        </div>
     </div>
 
     <script>
-        // Khi người dùng chọn ảnh, đổi nền trang web
-        document.getElementById('bgInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.body.style.backgroundImage = `url(${e.target.result})`;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
+        function changeBackground(imagePath) {
+            document.body.style.backgroundImage = `url(${imagePath})`;
+        }
     </script>
 
 </body>
 </html>
-
