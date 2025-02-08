@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn số may mắn</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; max-width: 400px; margin: auto; }
+        .number { padding: 10px; border: 1px solid #000; cursor: pointer; background: #f0f0f0; }
+        .locked { background: red; color: white; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h2>Nhập tên của bạn:</h2>
+    <input type="text" id="username" placeholder="Nhập tên...">
+    <button onclick="saveName()">Xác nhận</button>
+    <h3 id="welcome"></h3>
+    
+    <h2>Chọn số từ 1 - 99</h2>
+    <div class="grid" id="numbers"></div>
+
+    <script>
+        let username = localStorage.getItem("username") || "";
+        let selectedNumbers = JSON.parse(localStorage.getItem("selectedNumbers")) || {}; 
+        
+        function saveName() {
+            username = document.getElementById("username").value.trim();
+            if (username) {
+                localStorage.setItem("username", username);
+                document.getElementById("welcome").innerText = "Xin chào, " + username;
+            }
+        }
+        
+        function createNumbers() {
+            let container = document.getElementById("numbers");
+            for (let i = 1; i <= 99; i++) {
+                let btn = document.createElement("div");
+                btn.innerText = i;
+                btn.className = "number";
+                
+                if (selectedNumbers[i]) {
+                    btn.classList.add("locked");
+                    btn.innerText += " (" + selectedNumbers[i] + ")";
+                } else {
+                    btn.onclick = function () { selectNumber(i, btn); };
+                }
+                container.appendChild(btn);
+            }
+        }
+        
+        function selectNumber(num, btn) {
+            if (!username) {
+                alert("Bạn phải nhập tên trước!");
+                return;
+            }
+            if (selectedNumbers[num]) {
+                alert("Số này đã được chọn bởi " + selectedNumbers[num]);
+                return;
+            }
+            selectedNumbers[num] = username;
+            localStorage.setItem("selectedNumbers", JSON.stringify(selectedNumbers));
+            btn.classList.add("locked");
+            btn.innerText = num + " (" + username + ")";
+            btn.onclick = null;
+        }
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            if (username) {
+                document.getElementById("welcome").innerText = "Xin chào, " + username;
+            }
+            createNumbers();
+        });
+    </script>
+</body>
+</html>
 
