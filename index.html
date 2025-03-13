@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Effect Generator</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&family=Roboto:wght@400;700&family=Montserrat:wght@400;700&display=swap');
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
             text-align: center;
@@ -25,6 +25,14 @@
     <h2>Text Effect Generator</h2>
     <div class="controls">
         <input type="text" id="textInput" placeholder="Nhập chữ..." oninput="updateText()">
+        <br><br>
+        <label>Chọn phông chữ:
+            <select id="fontSelect" onchange="updateText()">
+                <option value="Be Vietnam Pro">Be Vietnam Pro</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Montserrat">Montserrat</option>
+            </select>
+        </label>
         <br><br>
         <label>
             <input type="checkbox" id="boldToggle" onchange="updateText()"> In đậm
@@ -59,9 +67,10 @@
             const outline = document.getElementById('outlineToggle').checked;
             const outlineSize = document.getElementById('outlineSize').value;
             const outlineColor = document.getElementById('outlineColor').value;
+            const fontFamily = document.getElementById('fontSelect').value;
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = `${isBold ? 'bold' : 'normal'} ${fontWeight * 10}px 'Be Vietnam Pro'`;
+            ctx.font = `${isBold ? 'bold' : 'normal'} ${fontWeight * 10}px '${fontFamily}'`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             
