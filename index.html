@@ -14,6 +14,7 @@
         #textCanvas {
             border: 1px solid #ccc;
             margin-top: 10px;
+            background: transparent;
         }
         .controls {
             margin: 10px 0;
@@ -29,9 +30,14 @@
             <input type="checkbox" id="boldToggle" onchange="updateText()"> In đậm
         </label>
         <br><br>
-        <label>Size: <input type="range" id="fontSize" min="20" max="100" value="40" oninput="updateText()"></label>
+        <label>Size chữ: <input type="range" id="fontSize" min="20" max="100" value="40" oninput="updateText()"></label>
+        <br><br>
+        <label>Outline: <input type="checkbox" id="outlineToggle" onchange="updateText()"></label>
+        <br><br>
+        <label>Độ dày outline: <input type="range" id="outlineSize" min="1" max="10" value="2" oninput="updateText()"></label>
         <br><br>
         <button onclick="copyImage()">Copy Image</button>
+        <button onclick="downloadImage()">Download Image</button>
     </div>
     <canvas id="textCanvas" width="500" height="200"></canvas>
     
@@ -42,12 +48,21 @@
             const text = document.getElementById('textInput').value;
             const isBold = document.getElementById('boldToggle').checked;
             const fontSize = document.getElementById('fontSize').value;
+            const outline = document.getElementById('outlineToggle').checked;
+            const outlineSize = document.getElementById('outlineSize').value;
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.font = `${isBold ? 'bold' : 'normal'} ${fontSize}px 'Be Vietnam Pro'`;
-            ctx.fillStyle = "black";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
+            
+            if (outline) {
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = outlineSize;
+                ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
+            }
+            
+            ctx.fillStyle = "black";
             ctx.fillText(text, canvas.width / 2, canvas.height / 2);
         }
         
@@ -58,6 +73,14 @@
                 navigator.clipboard.write([item]);
                 alert("Đã copy hình ảnh!");
             });
+        }
+        
+        function downloadImage() {
+            const canvas = document.getElementById('textCanvas');
+            const link = document.createElement('a');
+            link.download = 'text-image.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
         }
     </script>
 </body>
