@@ -4,92 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Effect Generator BY DatCuCaiTv</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@900&display=swap');
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-        }
-        .container {
-            margin-top: 20px;
-        }
-        #text-output {
             font-family: 'Be Vietnam Pro', sans-serif;
-            font-size: 60px;
-            font-weight: 900;
-            color: black;
-            text-shadow: 3px 3px 0px white;
-            display: inline-block;
-            padding: 10px;
+            text-align: center;
+            padding: 20px;
         }
-        .options {
+        #textCanvas {
+            border: 1px solid #ccc;
             margin-top: 10px;
+            background: transparent;
+        }
+        .controls {
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Text Effect Generator</h2>
-        <input type="text" id="text-input" placeholder="Nhập chữ..." oninput="updateText()">
-        <br>
-        <label>Chọn Font:</label>
-        <select id="font-select" onchange="updateText()">
-            <option value="Be Vietnam Pro">Be Vietnam Pro Black</option>
-            <option value="Arial">Arial</option>
-            <option value="Verdana">Verdana</option>
-            <option value="Courier New">Courier New</option>
-        </select>
-        <br>
-        <label>Màu chữ:</label>
-        <input type="color" id="text-color" value="#000000" onchange="updateText()">
-        <br>
-        <label>Màu viền:</label>
-        <input type="color" id="outline-color" value="#ffffff" onchange="updateText()">
-        <br>
-        <label>Độ dày viền:</label>
-        <input type="range" id="outline-width" min="0" max="10" value="3" onchange="updateText()">
-        <br>
-        <div id="text-output">Text Sample</div>
-        <br>
-        <button onclick="copyImage()">Copy Ảnh</button>
-        <button onclick="downloadImage()">Tải Xuống</button>
+    <h2>Text Effect Generator BY DatCuCaiTv</h2>
+    <div class="controls">
+        <input type="text" id="textInput" placeholder="Nhập chữ..." oninput="updateText()">
+        <br><br>
+        <label>Chọn phông chữ:
+            <select id="fontSelect" onchange="updateText()">
+                <option value="Be Vietnam Pro">Be Vietnam Pro Black Regular</option>
+            </select>
+        </label>
+        <br><br>
+        <label>
+            <input type="checkbox" id="boldToggle" onchange="updateText()"> In đậm
+        </label>
+        <br><br>
+        <label>Size chữ: <input type="range" id="fontSize" min="20" max="100" value="40" oninput="updateText()"></label>
+        <br><br>
+        <label>Chọn màu chữ: <input type="color" id="textColor" value="#000000" oninput="updateText()"></label>
+        <br><br>
+        <label>Outline: <input type="checkbox" id="outlineToggle" onchange="updateText()"></label>
+        <br><br>
+        <label>Độ dày outline: <input type="range" id="outlineSize" min="1" max="10" value="2" oninput="updateText()"></label>
+        <br><br>
+        <label>Chọn màu outline: <input type="color" id="outlineColor" value="#000000" oninput="updateText()"></label>
+        <br><br>
+        <button onclick="copyImage()">Copy Image</button>
+        <button onclick="downloadImage()">Download Image</button>
     </div>
+    <canvas id="textCanvas" width="500" height="200"></canvas>
+    
     <script>
         function updateText() {
-            let text = document.getElementById("text-input").value;
-            let font = document.getElementById("font-select").value;
-            let textColor = document.getElementById("text-color").value;
-            let outlineColor = document.getElementById("outline-color").value;
-            let outlineWidth = document.getElementById("outline-width").value;
-            let output = document.getElementById("text-output");
+            const canvas = document.getElementById('textCanvas');
+            const ctx = canvas.getContext('2d');
+            const text = document.getElementById('textInput').value;
+            const isBold = document.getElementById('boldToggle').checked;
+            const fontSize = document.getElementById('fontSize').value;
+            const textColor = document.getElementById('textColor').value;
+            const outline = document.getElementById('outlineToggle').checked;
+            const outlineSize = document.getElementById('outlineSize').value;
+            const outlineColor = document.getElementById('outlineColor').value;
+            const fontFamily = "Be Vietnam Pro";
             
-            output.textContent = text;
-            output.style.fontFamily = font;
-            output.style.color = textColor;
-            output.style.textShadow = `${outlineWidth}px ${outlineWidth}px 0px ${outlineColor}, 
-                                      -${outlineWidth}px -${outlineWidth}px 0px ${outlineColor}, 
-                                      ${outlineWidth}px -${outlineWidth}px 0px ${outlineColor}, 
-                                      -${outlineWidth}px ${outlineWidth}px 0px ${outlineColor}`;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `${isBold ? 'bold' : 'normal'} ${fontSize}px '${fontFamily}'`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            if (outline) {
+                ctx.strokeStyle = outlineColor;
+                ctx.lineWidth = outlineSize;
+                ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
+            }
+            
+            ctx.fillStyle = textColor;
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
         }
         
         function copyImage() {
-            html2canvas(document.getElementById("text-output"), {backgroundColor: null}).then(canvas => {
-                canvas.toBlob(blob => {
-                    navigator.clipboard.write([new ClipboardItem({"image/png": blob})]);
-                    alert("Đã copy hình ảnh!");
-                });
+            const canvas = document.getElementById('textCanvas');
+            canvas.toBlob(blob => {
+                const item = new ClipboardItem({ 'image/png': blob });
+                navigator.clipboard.write([item]);
+                alert("Đã copy hình ảnh!");
             });
         }
         
         function downloadImage() {
-            html2canvas(document.getElementById("text-output"), {backgroundColor: null}).then(canvas => {
-                let link = document.createElement("a");
-                link.download = "text_effect.png";
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
+            const canvas = document.getElementById('textCanvas');
+            const link = document.createElement('a');
+            link.download = 'text-image.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
         }
     </script>
 </body>
