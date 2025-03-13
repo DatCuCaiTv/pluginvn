@@ -1,6 +1,7 @@
 {
-  "keys": {
-    "12JD45": "active",
-    "XYZ789": "expired"
-  }
+  "keys": [
+    "12JD25",
+    "XYZ789",
+    "MINECRAFT456"
+  ]
 }
