@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Nhóm</title>
+    <title>Chat P2P (WebRTC)</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
         #chatbox { width: 80%; height: 300px; border: 1px solid #ccc; overflow-y: auto; margin: 10px auto; padding: 10px; text-align: left; }
@@ -12,9 +12,13 @@
 </head>
 <body>
 
-    <h2>Chat Nhóm Nội Bộ</h2>
-    <input type="text" id="username" placeholder="Nhập tên của bạn">
-    <button onclick="joinChat()">Tham gia</button>
+    <h2>Chat P2P (Không cần Server)</h2>
+    
+    <button onclick="createOffer()">Tạo mã kết nối</button>
+    <button onclick="joinChat()">Nhập mã kết nối</button>
+
+    <input type="text" id="connectionCode" placeholder="Dán mã kết nối ở đây">
+    <button onclick="connect()">Kết nối</button>
 
     <div id="chatArea" style="display:none;">
         <div id="chatbox"></div>
@@ -23,38 +27,62 @@
     </div>
 
     <script>
-        let socket, username;
+        let peerConnection;
+        let dataChannel;
+
+        function createOffer() {
+            peerConnection = new RTCPeerConnection();
+            dataChannel = peerConnection.createDataChannel("chat");
+
+            dataChannel.onmessage = event => displayMessage("Người khác", event.data);
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) return;
+                document.getElementById("connectionCode").value = btoa(JSON.stringify(peerConnection.localDescription));
+            };
+
+            peerConnection.createOffer()
+                .then(offer => peerConnection.setLocalDescription(offer));
+        }
 
         function joinChat() {
-            username = document.getElementById("username").value.trim();
-            if (username === "") {
-                alert("Vui lòng nhập tên!");
-                return;
-            }
-            
-            document.getElementById("chatArea").style.display = "block";
+            peerConnection = new RTCPeerConnection();
 
-            // Kết nối WebSocket tới server
-            socket = new WebSocket("ws://localhost:3000");
-
-            socket.onopen = function() {
-                socket.send(JSON.stringify({ type: "join", user: username }));
+            peerConnection.ondatachannel = event => {
+                dataChannel = event.channel;
+                dataChannel.onmessage = event => displayMessage("Người khác", event.data);
             };
 
-            socket.onmessage = function(event) {
-                const chatbox = document.getElementById("chatbox");
-                const data = JSON.parse(event.data);
-                chatbox.innerHTML += `<p><strong>${data.user}:</strong> ${data.message}</p>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) return;
+                document.getElementById("connectionCode").value = btoa(JSON.stringify(peerConnection.localDescription));
             };
+        }
+
+        function connect() {
+            const remoteOffer = JSON.parse(atob(document.getElementById("connectionCode").value));
+            peerConnection.setRemoteDescription(new RTCSessionDescription(remoteOffer))
+                .then(() => {
+                    if (!peerConnection.localDescription) {
+                        return peerConnection.createAnswer()
+                            .then(answer => peerConnection.setLocalDescription(answer));
+                    }
+                });
         }
 
         function sendMessage() {
             const message = document.getElementById("message").value.trim();
-            if (message !== "") {
-                socket.send(JSON.stringify({ type: "message", user: username, message: message }));
+            if (message !== "" && dataChannel) {
+                dataChannel.send(message);
+                displayMessage("Bạn", message);
                 document.getElementById("message").value = "";
             }
+        }
+
+        function displayMessage(user, message) {
+            const chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<p><strong>${user}:</strong> ${message}</p>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
         }
     </script>
 
