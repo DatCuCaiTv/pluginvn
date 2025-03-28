@@ -3,52 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload & Copy Ảnh</title>
+    <title>Chat Nhóm</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-        #preview { max-width: 300px; margin-top: 20px; display: none; }
-        #copyButton { display: none; margin-top: 10px; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+        #chatbox { width: 80%; height: 300px; border: 1px solid #ccc; overflow-y: auto; margin: 10px auto; padding: 10px; text-align: left; }
+        input, button { padding: 10px; margin: 5px; }
     </style>
 </head>
 <body>
 
-    <h2>Tải ảnh lên & Sao chép vào Messenger/Zalo</h2>
-    <input type="file" id="upload" accept="image/*">
-    <br>
-    <img id="preview">
-    <br>
-    <button id="copyButton">Sao chép Ảnh</button>
+    <h2>Chat Nhóm Nội Bộ</h2>
+    <input type="text" id="username" placeholder="Nhập tên của bạn">
+    <button onclick="joinChat()">Tham gia</button>
+
+    <div id="chatArea" style="display:none;">
+        <div id="chatbox"></div>
+        <input type="text" id="message" placeholder="Nhập tin nhắn">
+        <button onclick="sendMessage()">Gửi</button>
+    </div>
 
     <script>
-        const upload = document.getElementById("upload");
-        const preview = document.getElementById("preview");
-        const copyButton = document.getElementById("copyButton");
+        let socket, username;
 
-        upload.addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = "block";
-                    copyButton.style.display = "inline-block";
-                };
-                reader.readAsDataURL(file);
+        function joinChat() {
+            username = document.getElementById("username").value.trim();
+            if (username === "") {
+                alert("Vui lòng nhập tên!");
+                return;
             }
-        });
+            
+            document.getElementById("chatArea").style.display = "block";
 
-        copyButton.addEventListener("click", async function() {
-            try {
-                const blob = await fetch(preview.src).then(res => res.blob());
-                await navigator.clipboard.write([
-                    new ClipboardItem({ [blob.type]: blob })
-                ]);
-                alert("Ảnh đã được sao chép! Dán vào Messenger/Zalo để gửi.");
-            } catch (error) {
-                alert("Lỗi khi sao chép ảnh! Hãy thử trên Chrome hoặc Edge.");
-                console.error(error);
+            // Kết nối WebSocket tới server
+            socket = new WebSocket("ws://localhost:3000");
+
+            socket.onopen = function() {
+                socket.send(JSON.stringify({ type: "join", user: username }));
+            };
+
+            socket.onmessage = function(event) {
+                const chatbox = document.getElementById("chatbox");
+                const data = JSON.parse(event.data);
+                chatbox.innerHTML += `<p><strong>${data.user}:</strong> ${data.message}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            };
+        }
+
+        function sendMessage() {
+            const message = document.getElementById("message").value.trim();
+            if (message !== "") {
+                socket.send(JSON.stringify({ type: "message", user: username, message: message }));
+                document.getElementById("message").value = "";
             }
-        });
+        }
     </script>
 
 </body>
