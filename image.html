@@ -13,66 +13,86 @@
 <body>
 
     <h2>Chat P2P (Không cần Server)</h2>
-    
-    <button onclick="createOffer()">Tạo mã kết nối</button>
-    <button onclick="joinChat()">Nhập mã kết nối</button>
 
-    <input type="text" id="connectionCode" placeholder="Dán mã kết nối ở đây">
-    <button onclick="connect()">Kết nối</button>
+    <button onclick="createRoom()">Tạo mã phòng</button>
+    <input type="text" id="roomCode" placeholder="Nhập mã phòng (6 số)">
+    <button onclick="joinRoom()">Kết nối</button>
 
     <div id="chatArea" style="display:none;">
+        <h3>Phòng: <span id="currentRoom"></span></h3>
         <div id="chatbox"></div>
         <input type="text" id="message" placeholder="Nhập tin nhắn">
         <button onclick="sendMessage()">Gửi</button>
     </div>
 
     <script>
-        let peerConnection;
+        let peerConnections = {};
+        let localConnection;
+        let roomID;
         let dataChannel;
 
-        function createOffer() {
-            peerConnection = new RTCPeerConnection();
-            dataChannel = peerConnection.createDataChannel("chat");
-
-            dataChannel.onmessage = event => displayMessage("Người khác", event.data);
-
-            peerConnection.onicecandidate = event => {
-                if (event.candidate) return;
-                document.getElementById("connectionCode").value = btoa(JSON.stringify(peerConnection.localDescription));
-            };
-
-            peerConnection.createOffer()
-                .then(offer => peerConnection.setLocalDescription(offer));
+        function generateRoomCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString(); // 6 số ngẫu nhiên
         }
 
-        function joinChat() {
-            peerConnection = new RTCPeerConnection();
-
-            peerConnection.ondatachannel = event => {
-                dataChannel = event.channel;
-                dataChannel.onmessage = event => displayMessage("Người khác", event.data);
-            };
-
-            peerConnection.onicecandidate = event => {
-                if (event.candidate) return;
-                document.getElementById("connectionCode").value = btoa(JSON.stringify(peerConnection.localDescription));
-            };
+        function createRoom() {
+            roomID = generateRoomCode();
+            document.getElementById("roomCode").value = roomID;
+            startConnection(true);
         }
 
-        function connect() {
-            const remoteOffer = JSON.parse(atob(document.getElementById("connectionCode").value));
-            peerConnection.setRemoteDescription(new RTCSessionDescription(remoteOffer))
-                .then(() => {
-                    if (!peerConnection.localDescription) {
-                        return peerConnection.createAnswer()
-                            .then(answer => peerConnection.setLocalDescription(answer));
-                    }
+        function joinRoom() {
+            roomID = document.getElementById("roomCode").value.trim();
+            if (roomID.length !== 6) {
+                alert("Mã phòng phải có 6 số!");
+                return;
+            }
+            startConnection(false);
+        }
+
+        function startConnection(isHost) {
+            document.getElementById("currentRoom").innerText = roomID;
+            document.getElementById("chatArea").style.display = "block";
+
+            localConnection = new RTCPeerConnection();
+
+            if (isHost) {
+                dataChannel = localConnection.createDataChannel("chat");
+                setupDataChannel();
+                localConnection.createOffer().then(offer => {
+                    localConnection.setLocalDescription(offer);
+                    peerConnections[roomID] = offer;
                 });
+            } else {
+                localConnection.ondatachannel = event => {
+                    dataChannel = event.channel;
+                    setupDataChannel();
+                };
+                const offer = peerConnections[roomID];
+                if (offer) {
+                    localConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                    localConnection.createAnswer().then(answer => {
+                        localConnection.setLocalDescription(answer);
+                    });
+                } else {
+                    alert("Mã phòng không tồn tại! Hãy thử lại.");
+                }
+            }
+
+            localConnection.onicecandidate = event => {
+                if (event.candidate) return;
+                peerConnections[roomID] = localConnection.localDescription;
+            };
+        }
+
+        function setupDataChannel() {
+            dataChannel.onmessage = event => displayMessage("Người khác", event.data);
+            dataChannel.onopen = () => console.log("Kết nối thành công!");
         }
 
         function sendMessage() {
             const message = document.getElementById("message").value.trim();
-            if (message !== "" && dataChannel) {
+            if (message !== "" && dataChannel.readyState === "open") {
                 dataChannel.send(message);
                 displayMessage("Bạn", message);
                 document.getElementById("message").value = "";
