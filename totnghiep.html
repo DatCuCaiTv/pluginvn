@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Điểm Xét Tốt Nghiệp THPT 2025</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: url('images/hinhnen.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+        }
+        .input-group { margin-bottom: 10px; }
+        label { display: block; font-weight: bold; }
+        input { width: 100%; padding: 5px; }
+        button { margin-top: 10px; padding: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Tính Điểm Xét Tốt Nghiệp THPT 2025</h2>
+        <p>Web được làm bởi Phan Tấn Đạt THPT Khánh Lâm</p>
+        <label>Chọn phương thức tính phù hợp:</label>
+        <select id="formula" onchange="toggleFields()">
+            <option value="1">Công thức A (4 môn thi)</option>
+            <option value="2">Công thức B (đối với học sinh sử dụng chứng chỉ ngoại ngữ để miễn thi môn ngoại ngữ)</option>
+        </select>
+        
+        <div id="formula1">
+            <div class="input-group"><label>Tổng điểm 4 môn thi:</label><input type="number" id="m4" step="0.01"></div>
+            <div class="input-group"><label>Tổng điểm KK (nếu có, nhập 0 nếu không):</label><input type="number" id="kk1" step="0.01"></div>
+        </div>
+        
+        <div id="formula2" style="display: none;">
+            <div class="input-group"><label>Tổng điểm 3 môn thi:</label><input type="number" id="m3" step="0.01"></div>
+            <div class="input-group"><label>Tổng điểm KK (nếu có, nhập 0 nếu không):</label><input type="number" id="kk2" step="0.01"></div>
+        </div>
+        
+        <div class="input-group"><label>Điểm TB các năm học:</label><input type="number" id="dtb" step="0.01"></div>
+        <div class="input-group"><label>Điểm ưu tiên (nếu có, nhập 0 nếu không):</label><input type="number" id="ut" step="0.01"></div>
+        
+        <button onclick="calculate()">Tính điểm</button>
+        <h3>Kết quả: <span id="result">0</span></h3>
+    </div>
+
+    <script>
+        function toggleFields() {
+            let formula = document.getElementById("formula").value;
+            document.getElementById("formula1").style.display = (formula == "1") ? "block" : "none";
+            document.getElementById("formula2").style.display = (formula == "2") ? "block" : "none";
+        }
+        
+        function calculate() {
+            let formula = document.getElementById("formula").value;
+            let dtb = parseFloat(document.getElementById("dtb").value) || 0;
+            let ut = parseFloat(document.getElementById("ut").value) || 0;
+            let result = 0;
+            
+            if (formula == "1") {
+                let m4 = parseFloat(document.getElementById("m4").value) || 0;
+                let kk1 = parseFloat(document.getElementById("kk1").value) || 0;
+                result = (((m4 + kk1) / 4) / 2) + (dtb / 2) + ut;
+            } else {
+                let m3 = parseFloat(document.getElementById("m3").value) || 0;
+                let kk2 = parseFloat(document.getElementById("kk2").value) || 0;
+                result = (((m3 / 3) + kk2) / 2) + (dtb / 2) + ut;
+            }
+            
+            document.getElementById("result").innerText = result.toFixed(2);
+        }
+    </script>
+</body>
+</html>
