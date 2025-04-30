@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Text Effect Generator BY DatCuCaiTv</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@900&display=swap');
     @font-face {
       font-family: 'Minecraft';
-      src: url('https://fonts.cdnfonts.com/s/14990/Minecraftia-Regular.woff') format('woff');
+      src: url('https://cdn.jsdelivr.net/gh/datcucai/font@main/UTM%20Pixel.woff') format('woff');
     }
 
     body {
-      font-family: 'Be Vietnam Pro', sans-serif;
+      font-family: 'Minecraft', sans-serif;
       text-align: center;
       padding: 20px;
+      background-color: #1e1e1e;
+      color: white;
     }
 
     #textCanvas {
@@ -24,36 +25,34 @@
       display: block;
       margin-left: auto;
       margin-right: auto;
+      image-rendering: pixelated; /* giữ rõ pixel */
+      width: 1000px; /* phóng to ra để quan sát */
+      height: 180px;
     }
 
     .controls {
       margin: 10px 0;
+    }
+
+    input, select {
+      font-family: inherit;
     }
   </style>
 </head>
 <body>
   <h2>Text Effect Generator BY DatCuCaiTv</h2>
   <div class="controls">
-    <input type="text" id="textInput" placeholder="Nhập chữ..." oninput="updateText()">
+    <input type="text" id="textInput" placeholder="Nhập chữ..." oninput="updateText()" value="Luyện Khí">
     <br><br>
-    <label>Chọn phông chữ:
-      <select id="fontSelect" onchange="updateText()">
-        <option value="'Be Vietnam Pro', sans-serif">Be Vietnam Pro Black</option>
-        <option value="'Minecraft'">Minecraft</option>
-      </select>
-    </label>
+    <label>In đậm: <input type="checkbox" id="boldToggle" onchange="updateText()"></label>
     <br><br>
-    <label><input type="checkbox" id="boldToggle" onchange="updateText()"> In đậm</label>
-    <br><br>
-    <label>Size chữ: <input type="range" id="fontSize" min="10" max="40" value="14" oninput="updateText()"></label>
-    <br><br>
-    <label>Chọn màu chữ: <input type="color" id="textColor" value="#000000" oninput="updateText()"></label>
+    <label>Chọn màu chữ: <input type="color" id="textColor" value="#ffffff" oninput="updateText()"></label>
     <br><br>
     <label>Outline: <input type="checkbox" id="outlineToggle" onchange="updateText()"></label>
     <br><br>
-    <label>Độ dày outline: <input type="range" id="outlineSize" min="1" max="10" value="1" oninput="updateText()"></label>
+    <label>Độ dày outline: <input type="range" id="outlineSize" min="1" max="4" value="1" oninput="updateText()"></label>
     <br><br>
-    <label>Chọn màu outline: <input type="color" id="outlineColor" value="#000000" oninput="updateText()"></label>
+    <label>Màu viền: <input type="color" id="outlineColor" value="#000000" oninput="updateText()"></label>
     <br><br>
     <button onclick="copyImage()">Copy Image</button>
     <button onclick="downloadImage()">Download Image</button>
@@ -68,22 +67,21 @@
 
       const text = document.getElementById('textInput').value;
       const isBold = document.getElementById('boldToggle').checked;
-      const fontSize = parseInt(document.getElementById('fontSize').value);
+      const fontSize = 18;
       const textColor = document.getElementById('textColor').value;
       const outline = document.getElementById('outlineToggle').checked;
       const outlineSize = parseInt(document.getElementById('outlineSize').value);
       const outlineColor = document.getElementById('outlineColor').value;
-      const fontFamily = document.getElementById('fontSelect').value;
+      const fontFamily = "'Minecraft'";
 
       const fontStyle = `${isBold ? 'bold' : 'normal'} ${fontSize}px ${fontFamily}`;
       ctx.font = fontStyle;
 
-      // Tính chiều dài text để điều chỉnh width canvas
+      // Tính chiều dài để vẽ canvas đủ rộng
       const textWidth = ctx.measureText(text).width;
-      canvas.width = textWidth + outlineSize * 2 + 4; // thêm padding
+      canvas.width = Math.ceil(textWidth + outlineSize * 2 + 4);
       canvas.height = 18;
 
-      // Cập nhật lại sau khi đổi kích thước
       ctx.font = fontStyle;
       ctx.textBaseline = "middle";
       ctx.textAlign = "left";
@@ -120,7 +118,6 @@
       link.click();
     }
 
-    // Cập nhật ban đầu
     updateText();
   </script>
 </body>
