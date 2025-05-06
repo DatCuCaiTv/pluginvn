@@ -4,14 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Text Effect Generator BY DatCuCaiTv</title>
+  <!-- Thêm font Be Vietnam Pro từ Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    @font-face {
-      font-family: 'Minecraft';
-      src: url('https://cdn.jsdelivr.net/gh/datcucai/font@main/UTM%20Pixel.woff') format('woff');
-    }
-
     body {
-      font-family: 'Minecraft', sans-serif;
+      font-family: 'Be Vietnam Pro', sans-serif;
       text-align: center;
       padding: 20px;
       background-color: #1e1e1e;
@@ -79,7 +76,7 @@
       const outline = document.getElementById('outlineToggle').checked;
       const outlineSize = parseInt(document.getElementById('outlineSize').value);
       const outlineColor = document.getElementById('outlineColor').value;
-      const fontFamily = "'Minecraft'";
+      const fontFamily = "'Be Vietnam Pro', sans-serif";
 
       const fontStyle = `${isBold ? 'bold' : 'normal'} ${fontSize}px ${fontFamily}`;
       ctx.font = fontStyle;
@@ -110,7 +107,6 @@
       ctx.fillStyle = textColor;
       ctx.fillText(text, x, y);
 
-      // Cập nhật thông tin kích thước
       const info = document.getElementById("canvasInfo");
       info.innerText = `Kích thước ảnh: ${canvas.width}px x ${canvas.height}px`;
     }
