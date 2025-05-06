@@ -3,15 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Text Effect Generator BY DatCuCaiTv</title>
+  <title>Text Generator - Be Vietnam Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    @font-face {
-      font-family: 'Minecraft';
-      src: url('https://cdn.jsdelivr.net/gh/datcucai/font@main/UTM%20Pixel.woff') format('woff');
-    }
-
     body {
-      font-family: 'Minecraft', sans-serif;
+      font-family: 'Be Vietnam Pro', sans-serif;
       text-align: center;
       padding: 20px;
       background-color: #1e1e1e;
@@ -26,6 +22,9 @@
       margin-left: auto;
       margin-right: auto;
       image-rendering: pixelated;
+      /* scale canvas to make it easier to view */
+      transform: scale(3); /* change to 2 or 4 as needed */
+      transform-origin: top left;
     }
 
     .controls {
@@ -44,61 +43,65 @@
   </style>
 </head>
 <body>
-  <h2>Text Effect Generator BY DatCuCaiTv</h2>
+  <h2>Text Generator - Be Vietnam Pro</h2>
   <div class="controls">
     <input type="text" id="textInput" placeholder="Nhập chữ..." oninput="updateText()" value="Luyện Khí">
     <br><br>
 
-    <label>Cỡ chữ: <input type="range" id="fontSize" min="8" max="100" value="18" oninput="updateText()"> 
-      <span id="fontSizeLabel">18px</span>
+    <label>Cỡ chữ: 
+      <input type="range" id="fontSize" min="6" max="24" value="12" oninput="updateText()"> 
+      <span id="fontSizeLabel">12px</span>
     </label>
     <br><br>
 
     <label>In đậm: <input type="checkbox" id="boldToggle" onchange="updateText()"></label>
     <br><br>
 
-    <label>Chọn màu chữ: <input type="color" id="textColor" value="#ffffff" oninput="updateText()"></label>
+    <label>Màu chữ: <input type="color" id="textColor" value="#ffffff" oninput="updateText()"></label>
     <br><br>
 
-    <label>Outline: <input type="checkbox" id="outlineToggle" onchange="updateText()"></label>
+    <label>Viền: <input type="checkbox" id="outlineToggle" onchange="updateText()"></label>
     <br><br>
 
-    <label>Độ dày outline: <input type="range" id="outlineSize" min="1" max="4" value="1" oninput="updateText()"></label>
+    <label>Độ dày viền: <input type="range" id="outlineSize" min="1" max="3" value="1" oninput="updateText()"></label>
     <br><br>
 
     <label>Màu viền: <input type="color" id="outlineColor" value="#000000" oninput="updateText()"></label>
     <br><br>
 
-    <button onclick="copyImage()">Copy Image</button>
-    <button onclick="downloadImage()">Download Image</button>
+    <button onclick="copyImage()">Copy</button>
+    <button onclick="downloadImage()">Download</button>
   </div>
 
   <canvas id="textCanvas"></canvas>
-  <div id="canvasInfo">Kích thước ảnh: đang tải...</div>
+  <div id="canvasInfo">Đang tải...</div>
 
   <script>
     function updateText() {
       const canvas = document.getElementById('textCanvas');
       const ctx = canvas.getContext('2d');
 
-      const text = document.getElementById('textInput').value;
+      const text = document.getElementById('textInput').value || " ";
       const isBold = document.getElementById('boldToggle').checked;
       const fontSize = parseInt(document.getElementById('fontSize').value);
       const textColor = document.getElementById('textColor').value;
       const outline = document.getElementById('outlineToggle').checked;
       const outlineSize = parseInt(document.getElementById('outlineSize').value);
       const outlineColor = document.getElementById('outlineColor').value;
-      const fontFamily = "'Minecraft'";
 
-      const fontStyle = `${isBold ? 'bold' : 'normal'} ${fontSize}px ${fontFamily}`;
-      ctx.font = fontStyle;
+      const fontWeight = isBold ? "700" : "400";
+      const fontFamily = "'Be Vietnam Pro', sans-serif";
+
+      const font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      ctx.font = font;
 
       const textWidth = ctx.measureText(text).width;
+      const canvasHeight = 18; // fixed height
       const padding = 4 + outlineSize * 2;
       canvas.width = Math.ceil(textWidth + padding);
-      canvas.height = fontSize + outlineSize * 2 + 4;
+      canvas.height = canvasHeight;
 
-      ctx.font = fontStyle;
+      ctx.font = font;
       ctx.textBaseline = "middle";
       ctx.textAlign = "left";
 
@@ -120,9 +123,8 @@
       ctx.fillStyle = textColor;
       ctx.fillText(text, x, y);
 
-      // Cập nhật thông tin kích thước
       document.getElementById("canvasInfo").innerText =
-        `Kích thước ảnh: ${canvas.width}px x ${canvas.height}px | Cỡ chữ: ${fontSize}px`;
+        `Kích thước canvas: ${canvas.width}px x ${canvas.height}px | Cỡ chữ: ${fontSize}px`;
       document.getElementById("fontSizeLabel").innerText = `${fontSize}px`;
     }
 
@@ -138,8 +140,8 @@
     function downloadImage() {
       const canvas = document.getElementById('textCanvas');
       const link = document.createElement('a');
-      link.download = 'text-image.png';
-      link.href = canvas.toDataURL("image/png");
+      link.download = 'text.png';
+      link.href = canvas.toDataURL();
       link.click();
     }
 
